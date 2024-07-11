@@ -19,17 +19,30 @@ app.use(
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.get('/products', (req: Request, res: Response) => {})
-
 app.get('/todos', (req: Request, res: Response) => {
   res.json(parsedData.todos)
+})
+
+app.get('/todo', (req: Request, res: Response) => {
+  const id = req.query.id as string
+
+  if (!id) {
+    return res.status(400).json({ error: 'ID is required' })
+  }
+
+  const todo = parsedData.todos.find((el) => el.id.toString() === id)
+
+  if (todo) {
+    res.json(todo)
+  } else {
+    res.status(404).json({ error: 'Todo not found' })
+  }
 })
 
 app.get('/', (req: Request, res: Response) => {
   res.send(parsedData)
 })
 
-app.get('/projects', (req: Request, res: Response) => {})
 const PORT: number = parseInt((process.env.PORT || '4000') as string, 10)
 
 app.listen(PORT, () => {
